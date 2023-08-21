@@ -1,25 +1,46 @@
 // Importing Models
 const db = require('../models');
 const { Op } = require("sequelize");
-const User = db.users;
+const User = db.User;
 const Room = db.rooms;
+var generator = require('generate-password');
+const bcrypt = require("bcryptjs");
 
 //  User Routes
 exports.createUser = async (req, res) => {
     try {
-        const user = await User.create(req.body);
-        res.status(200).send({ message: "User Created Successfully", user: user });
+        if(req.body.role == 0){
+            return res.status(403).send({ message: "Role Forbidden"});    
+        }
+        if(!req.body.firstName || !req.body.email || !req.body.role){
+            return res.status(422).send({ message: "Missing Information"});    
+        }
+        const userSameEmail = await User.findOne({
+            where: {
+                email: {
+                    [Op.eq]: req.body.email
+                }
+            }
+        });
+        if (userSameEmail) {
+            return res.status(409).send({ message: "User Email Already exists"});         
+        }
+        generatedPassword = req.body.firstName + "@123"
+        console.log(generatedPassword);
+        const user = await User.create({...req.body, password:bcrypt.hashSync(generatedPassword, 8)});
+        console.log(user);
+        return res.status(200).send({ message: "User Created Successfully", user: {...user, password:generatedPassword} });
     } catch (error) {
-        res.status(500).send({ error: error })
+        return res.status(500).json({ error: "Internal Server Error" })
     }
 }
 
 exports.getAllUsers = async (req, res) => {
     try {
         const users = await User.findAll();
-        res.status(200).send({ message: "Users Fetched Successfully", users: users });
+        return res.status(200).send({ message: "Users Fetched Successfully", users: users });
     } catch (error) {
-        res.status(500).json({ message: error });
+        return res.status(500).json({ message: error });
     }
 
 }
@@ -34,12 +55,12 @@ exports.getUser = async (req, res) => {
             }
         });
         if (user) {
-            res.status(200).send({ message: "User Fetched Successfully", users: user });
+            return res.status(200).send({ message: "User Fetched Successfully", users: user });
         } else {
-            res.status(404).send({ message: "No user Found" });
+            return res.status(404).send({ message: "No user Found" });
         }
     } catch (error) {
-        res.status(500).json({ message: error });
+        return res.status(500).json({ message: error });
     }
 }
 
@@ -60,13 +81,13 @@ exports.updateUser = async (req, res) => {
                     }
                 }
             });
-            res.status(200).send({ message: "User Updated Successfully" });
+            return res.status(200).send({ message: "User Updated Successfully" });
         }else{
-            res.status(404).send({ message: "No user Found Please check the User id" });
+            return res.status(404).send({ message: "No user Found Please check the User id" });
         }
 
     } catch (error) {
-        res.status(500).json({ message: error });
+        return res.status(500).json({ message: error });
     }
 }
 
@@ -87,12 +108,12 @@ exports.deleteUser = async (req, res) => {
                     }
                 }
             });
-            res.status(200).send({ message: "User Deleted Successfully" });
+            return res.status(200).send({ message: "User Deleted Successfully" });
         }else{
-            res.status(404).send({ message: "No user Found Please check the User id" });
+            return res.status(404).send({ message: "No user Found Please check the User id" });
         }
     } catch (error) {
-        res.status(500).json({ message: error });
+        return res.status(500).json({ message: error });
     }
 }
 
@@ -102,18 +123,18 @@ exports.deleteUser = async (req, res) => {
 exports.addRoom = async (req, res) => {
     try {
         const room = await Room.create(req.body);
-        res.status(200).send({ message: "Room Added Successfully", room_details: room });
+        return res.status(200).send({ message: "Room Added Successfully", room_details: room });
     } catch (error) {
-        res.status(500).send({ error: error })
+        return res.status(500).send({ error: error })
     }
 }
 
 exports.getAllRoms = async (req, res) => {
     try {
         const rooms = await Room.findAll();
-        res.status(200).send({ message: "Rooms Fetched Successfully", rooms: rooms });
+        return res.status(200).send({ message: "Rooms Fetched Successfully", rooms: rooms });
     } catch (error) {
-        res.status(500).send({ error: error })
+        return res.status(500).send({ error: error })
     }
 }
 
@@ -127,12 +148,12 @@ exports.getAllAvailableRooms = async(req, res) => {
             }
         });
         if (room) {
-            res.status(200).send({ message: "Available Room Details Fetched Successfully", room: room });
+            return res.status(200).send({ message: "Available Room Details Fetched Successfully", room: room });
         } else {
-            res.status(200).send({ message: "No Avaialble Rooms Found" });
+            return res.status(200).send({ message: "No Avaialble Rooms Found" });
         }
     } catch (error) {
-        res.status(500).json({ message: error });
+        return res.status(500).json({ message: error });
     }
 }
 
@@ -147,12 +168,12 @@ exports.getRoomDetails = async(req, res) => {
             }
         });
         if (room) {
-            res.status(200).send({ message: "Room Details Fetched Successfully", room: room });
+            return res.status(200).send({ message: "Room Details Fetched Successfully", room: room });
         } else {
-            res.status(404).send({ message: "No Room Found" });
+            return res.status(404).send({ message: "No Room Found" });
         }
     } catch (error) {
-        res.status(500).json({ message: error });
+        return res.status(500).json({ message: error });
     }
 }
 
@@ -173,13 +194,13 @@ exports.updateRoomDetails = async (req, res) => {
                     }
                 }
             });
-            res.status(200).send({ message: "Room Details Updated Successfully" });
+            return res.status(200).send({ message: "Room Details Updated Successfully" });
         }else{
-            res.status(404).send({ message: "No room Found Please check the Room id" });
+            return res.status(404).send({ message: "No room Found Please check the Room id" });
         }
 
     } catch (error) {
-        res.status(500).json({ message: error });
+        return res.status(500).json({ message: error });
     }
 }
 
@@ -200,12 +221,12 @@ exports.deleteRoom = async (req, res) => {
                     }
                 }
             });
-            res.status(200).send({ message: "Room Deleted Successfully" });
+            return res.status(200).send({ message: "Room Deleted Successfully" });
         }else{
-            res.status(404).send({ message: "No Room Found Please check the User id" });
+            return res.status(404).send({ message: "No Room Found Please check the User id" });
         }
     } catch (error) {
-        res.status(500).json({ message: error });
+        return res.status(500).json({ message: error });
     }
 }
 

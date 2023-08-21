@@ -1,34 +1,35 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/admin');
+const {verifyToken, isAdmin} = require("../Middlewares");
 
 
 // User Routes 
 
-router.get("/users",adminController.getAllUsers);
+router.get("/users",verifyToken,isAdmin, adminController.getAllUsers);
 
-router.get("/user/:userId", adminController.getUser);
+router.get("/user/:userId",verifyToken,isAdmin, adminController.getUser);
 
-router.delete('/deleteUser/:userId', adminController.deleteUser);
+router.delete('/deleteUser/:userId',verifyToken, isAdmin, adminController.deleteUser);
 
-router.post('/createUser', adminController.createUser);
+router.post('/createUser', verifyToken, isAdmin, adminController.createUser);
 
-router.put('/updateUser/:userId', adminController.updateUser);
+router.put('/updateUser/:userId', verifyToken, isAdmin, adminController.updateUser);
 
 
 // Room Routes
 
-router.get('/rooms', adminController.getAllRoms);
+router.get('/rooms',verifyToken, adminController.getAllRoms);
 
-router.get('/availablerooms', adminController.getAllAvailableRooms);
+router.get('/availablerooms',verifyToken, adminController.getAllAvailableRooms);
 
-router.get('/room/:roomId', adminController.getRoomDetails);
+router.get('/room/:roomId', verifyToken, adminController.getRoomDetails);
 
-router.delete('/deleteRoom/:roomId', adminController.deleteRoom);
+router.delete('/deleteRoom/:roomId', verifyToken, isAdmin, adminController.deleteRoom);
 
-router.post('/addRoom', adminController.addRoom);
+router.post('/addRoom', verifyToken, isAdmin,  adminController.addRoom);
 
-router.put('/updateRoom/:roomId', adminController.updateRoomDetails);
+router.put('/updateRoom/:roomId', verifyToken, isAdmin, adminController.updateRoomDetails);
 
 
 module.exports = router;
