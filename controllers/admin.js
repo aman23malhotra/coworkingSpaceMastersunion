@@ -9,10 +9,7 @@ const bcrypt = require("bcryptjs");
 //  User Routes
 exports.createUser = async (req, res) => {
     try {
-        if(req.body.role == 0){
-            return res.status(403).send({ message: "Role Forbidden"});    
-        }
-        if(!req.body.firstName || !req.body.email || !req.body.role){
+        if(!req.body.firstName || !req.body.email || typeof(req.body.role) != 'number'){
             return res.status(422).send({ message: "Missing Information"});    
         }
         const userSameEmail = await User.findOne({
@@ -26,9 +23,7 @@ exports.createUser = async (req, res) => {
             return res.status(409).send({ message: "User Email Already exists"});         
         }
         generatedPassword = req.body.firstName + "@123"
-        console.log(generatedPassword);
         const user = await User.create({...req.body, password:bcrypt.hashSync(generatedPassword, 8)});
-        console.log(user);
         return res.status(200).send({ message: "User Created Successfully", user: {...user, password:generatedPassword} });
     } catch (error) {
         return res.status(500).json({ error: "Internal Server Error" })
@@ -73,8 +68,9 @@ exports.updateUser = async (req, res) => {
                 }
             }
         });
+        
         if (user) {
-            await user.update(req.body, {
+            const nowUser = await user.update(req.body, {
                 where: {
                     id: {
                         [Op.eq]: req.params.userId
@@ -122,6 +118,17 @@ exports.deleteUser = async (req, res) => {
 
 exports.addRoom = async (req, res) => {
     try {
+        const sameRoomName = await Room.findOne({
+            where: {
+                room_name: {
+                    [Op.eq]: req.body.room_name
+                }
+            }
+        });
+        if (sameRoomName) {
+            return res.status(409).send({ message: "Room Already exists"});         
+        }
+
         const room = await Room.create(req.body);
         return res.status(200).send({ message: "Room Added Successfully", room_details: room });
     } catch (error) {

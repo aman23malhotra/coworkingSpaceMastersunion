@@ -56,11 +56,10 @@ exports.checkDuplicateUsernameOrEmail = async (req, res, next) => {
 };
 
 exports.verifyToken = (req, res, next) => {
-    console.log(req.headers);
-    // req.headers['authorization'];
-    const token = req.headers['authorization'].split(' ')[1];
-    console.log(token);
-    if (!token) {
+    const tokenHeader = req?.headers['authorization'];
+    const token = req?.headers['authorization']?.split(' ')[1];
+
+    if (!tokenHeader && !token) {
         return res.status(401).send({
             message: "Unauthorized No token provided!",
         });
@@ -75,6 +74,8 @@ exports.verifyToken = (req, res, next) => {
                 });
             }
             req.email = decoded.email;
+            req.userId = decoded.id;
+            req.userRole = decoded.role;
             next();
         });
 };

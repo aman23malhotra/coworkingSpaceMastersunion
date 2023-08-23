@@ -12,7 +12,7 @@ router.get("/user/:userId",verifyToken,isAdmin, adminController.getUser);
 
 router.delete('/deleteUser/:userId',verifyToken, isAdmin, adminController.deleteUser);
 
-router.post('/createUser', verifyToken, isAdmin, adminController.createUser);
+router.post('/createUser',verifyToken,isAdmin, adminController.createUser);
 
 router.put('/updateUser/:userId', verifyToken, isAdmin, adminController.updateUser);
 

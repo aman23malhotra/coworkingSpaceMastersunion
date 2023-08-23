@@ -18,7 +18,6 @@ exports.signin = async (req, res) => {
         if (!user) {
             return res.status(404).send({ message: "User Not found." });
         }
-        console.log(user);
         const passwordIsValid = bcrypt.compareSync(
             req.body.password,
             user.password
@@ -29,12 +28,12 @@ exports.signin = async (req, res) => {
                 message: "Invalid Password!",
             });
         }
-        const token = await jwt.sign({ email: user.email, role:user.role },
+        const token = await jwt.sign({ email: user.email, role:user.role, id:user.id },
             process.env.SECRET,
             {
                 algorithm: 'HS256',
                 allowInsecureKeySizes: true,
-                expiresIn: 1800, // 24 hours
+                expiresIn: 1800, // 30 min
             });
 
         // req.session.token = token;
@@ -48,13 +47,3 @@ exports.signin = async (req, res) => {
     }
 };
 
-exports.signout = async (req, res) => {
-    try {
-        req.session = null;
-        return res.status(200).send({
-            message: "You've been signed out!"
-        });
-    } catch (err) {
-        this.next(err);
-    }
-};

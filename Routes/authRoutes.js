@@ -5,6 +5,4 @@ const middlewares = require("../Middlewares");
 
 router.post("/signin",authController.signin);
 
-// router.get("/signup",adminController.signup);
-
 module.exports = router;
