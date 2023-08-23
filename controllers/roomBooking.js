@@ -29,12 +29,9 @@ exports.roomBooking = async (req, res) => {
             include: [{
                 model: User,
                 required: true,
-            }, {
-                model: Room,
-                required: true,
             }
             ]
-        })
+        });
         if (previousBookings) {
             if (req.userRole == 0) {
                 let previousRoomBookingDestroyed = await roomBookings.destroy({
@@ -211,7 +208,6 @@ exports.deleteBooking = async (req, res) => {
                 required: true
             }]
         });
-        console.log("room", room);
         if (room) {
             if (req.userRole === 0 || req.userId === room.User.id) {
                 await roomBookings.destroy({
@@ -230,7 +226,6 @@ exports.deleteBooking = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 }

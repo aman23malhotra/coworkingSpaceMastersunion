@@ -35,7 +35,7 @@ exports.getAllUsers = async (req, res) => {
         const users = await User.findAll();
         return res.status(200).send({ message: "Users Fetched Successfully", users: users });
     } catch (error) {
-        return res.status(500).json({ message: error });
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 
 }
@@ -55,7 +55,7 @@ exports.getUser = async (req, res) => {
             return res.status(404).send({ message: "No user Found" });
         }
     } catch (error) {
-        return res.status(500).json({ message: error });
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 }
 
@@ -83,7 +83,7 @@ exports.updateUser = async (req, res) => {
         }
 
     } catch (error) {
-        return res.status(500).json({ message: error });
+        return res.status(500).json({ message: 'Internal Server' });
     }
 }
 
@@ -109,7 +109,7 @@ exports.deleteUser = async (req, res) => {
             return res.status(404).send({ message: "No user Found Please check the User id" });
         }
     } catch (error) {
-        return res.status(500).json({ message: error });
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 }
 
@@ -132,7 +132,7 @@ exports.addRoom = async (req, res) => {
         const room = await Room.create(req.body);
         return res.status(200).send({ message: "Room Added Successfully", room_details: room });
     } catch (error) {
-        return res.status(500).send({ error: error })
+        return res.status(500).send({ error: 'Internal Server Error' })
     }
 }
 
@@ -160,7 +160,7 @@ exports.getAllAvailableRooms = async(req, res) => {
             return res.status(200).send({ message: "No Avaialble Rooms Found" });
         }
     } catch (error) {
-        return res.status(500).json({ message: error });
+        return res.status(500).json({ message: 'Internal Server Error ' });
     }
 }
 

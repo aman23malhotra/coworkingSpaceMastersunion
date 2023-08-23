@@ -43,7 +43,7 @@ exports.signin = async (req, res) => {
             token:token
         });
     } catch (error) {
-        return res.status(500).send({ message: error.message });
+        return res.status(500).send({ message: 'Internal Server Error' });
     }
 };
 
